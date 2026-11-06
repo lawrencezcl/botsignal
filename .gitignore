@@ -1,0 +1,19 @@
+.env
+*.pem
+node_modules/
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+dist/
+build/
+
+# Runtime data & secrets
+data/
+!data/.gitkeep
+*.key
+secrets/
+/home/box/secrets/
