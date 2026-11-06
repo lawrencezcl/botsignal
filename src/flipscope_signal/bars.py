@@ -99,9 +99,10 @@ def detect_gaps(df: pd.DataFrame, interval_ms: int = MS_5M) -> dict[str, Any]:
     }
 
 
-def load_existing(path: Path) -> pd.DataFrame:
+def load_existing(path: Path, columns: list[str] | None = None) -> pd.DataFrame:
+    columns = list(COLS if columns is None else columns)
     if not path.exists():
-        return pd.DataFrame(columns=COLS)
+        return pd.DataFrame(columns=columns)
     df = pd.read_parquet(path)
     if "open_time" in df.columns:
         df["open_time"] = pd.to_datetime(df["open_time"], utc=True)

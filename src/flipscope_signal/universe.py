@@ -174,12 +174,30 @@ def find_latest_snapshot(*, prefer_before: date | None = None) -> tuple[date, di
 
 
 def copy_mt5_tradeable(snapshot_date: date) -> dict[str, Any] | None:
-    """Optional static copy of MT5 tradeable list for the day."""
+    """Optional static copy of MT5 tradeable list for the day.
+
+    If ``snapshot_mt5`` already wrote this date, keep that file. The dedicated
+    command is what tries the live terminal; this copy stays static.
+    """
     ensure_data_dirs()
+    dest = paths_mod.MT5_SNAPSHOT_DIR / f"{snapshot_date.isoformat()}.txt"
+    if dest.exists() and dest.stat().st_size > 0:
+        symbols = [
+            ln.strip()
+            for ln in dest.read_text(encoding="utf-8").splitlines()
+            if ln.strip() and not ln.strip().startswith("#")
+        ]
+        if symbols:
+            log.info("MT5 snapshot already present, keeping %s (%d symbols)", dest, len(symbols))
+            return {
+                "path": str(dest),
+                "source": "existing",
+                "count": len(symbols),
+                "symbols": symbols,
+            }
     if not paths_mod.MT5_TRADEABLE_SRC.exists():
         log.warning("MT5 tradeable source missing: %s", paths_mod.MT5_TRADEABLE_SRC)
         return None
-    dest = paths_mod.MT5_SNAPSHOT_DIR / f"{snapshot_date.isoformat()}.txt"
     shutil.copy2(paths_mod.MT5_TRADEABLE_SRC, dest)
     symbols = [
         ln.strip()

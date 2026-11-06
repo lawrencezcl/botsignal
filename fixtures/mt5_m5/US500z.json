@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "symbol": "US500z",
+  "history": [
+    {"time": 1793836800, "open": 7300.0, "high": 7302.5, "low": 7298.0, "close": 7301.0, "tick_volume": 210},
+    {"time": "2026-11-05T00:05:00", "open": 7301.0, "high": 7304.0, "low": 7300.5, "close": 7303.0, "tick_volume": 180}
+  ]
+}
