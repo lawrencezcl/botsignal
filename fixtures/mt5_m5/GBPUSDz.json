@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "symbol": "GBPUSDz",
+  "history": [
+    {"time": "2026-11-05T00:00:00", "open": 1.3400, "high": 1.3410, "low": 1.3390, "close": 1.3405, "tick_volume": 80},
+    {"time": "2026-11-05T00:05:00", "open": 1.3405, "high": 1.3420, "low": 1.3400, "close": 1.3415, "tick_volume": 90},
+    {"time": "2026-11-05T00:20:00", "open": 1.3415, "high": 1.3430, "low": 1.3410, "close": 1.3420, "tick_volume": 70},
+    {"time": "2026-11-05T00:25:00", "open": 1.3420, "high": 1.3420, "low": 1.3420, "close": 1.3420, "tick_volume": 0}
+  ]
+}

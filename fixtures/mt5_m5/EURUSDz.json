@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "symbol": "EURUSDz",
+  "period": "M5",
+  "history": [
+    {"time": "2026-11-05T00:45:00", "open": 1.12414, "high": 1.12434, "low": 1.12412, "close": 1.12432, "tick_volume": 127},
+    {"time": "2026-11-05T00:50:00", "open": 1.12434, "high": 1.12476, "low": 1.12433, "close": 1.12466, "tick_volume": 140},
+    {"time": "2026-11-05T00:55:00", "open": 1.12464, "high": 1.12475, "low": 1.12454, "close": 1.12466, "tick_volume": 112},
+    {"time": "2099-01-01T00:00:00", "open": 1.2, "high": 1.21, "low": 1.19, "close": 1.2, "tick_volume": 1}
+  ]
+}

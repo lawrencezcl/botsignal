@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "symbol": "XAUUSDz",
+  "history": [
+    {"time": "2026-11-05T03:00:00", "open": 4040.0, "high": 4042.0, "low": 4038.5, "close": 4041.2, "tick_volume": 64},
+    {"time": "2026-11-05T03:05:00", "open": 4041.2, "high": 4044.0, "low": 4040.0, "close": 4043.0, "tick_volume": 71}
+  ]
+}

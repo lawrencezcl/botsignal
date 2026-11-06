@@ -58,6 +58,71 @@ def cmd_snapshot_universe(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_snapshot_mt5(args: argparse.Namespace) -> int:
+    from .mt5_bars import run_snapshot_mt5
+
+    d = date.fromisoformat(args.date) if args.date else datetime.now(timezone.utc).date()
+    try:
+        doc = run_snapshot_mt5(snapshot_date=d, force_static=args.static_only)
+    except Exception as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    print(
+        json.dumps(
+            {
+                "path": doc["path"],
+                "snapshot_date": doc["snapshot_date"],
+                "symbol_count": doc["symbol_count"],
+                "source": doc["source"],
+                "degraded_from_static": doc["degraded_from_static"],
+                "alert": doc.get("alert"),
+                "sample_symbols": doc["sample_symbols"],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+    return 0
+
+
+def cmd_archive_mt5_bars(args: argparse.Namespace) -> int:
+    from .mt5_bars import run_archive_mt5_bars
+
+    symbols = None
+    if args.symbol:
+        symbols = [s.strip() for s in args.symbol.split(",") if s.strip()]
+    try:
+        summary = run_archive_mt5_bars(
+            symbols=symbols,
+            limit=args.limit,
+            from_json_dir=args.from_json_dir,
+            lookback_bars=args.lookback,
+            snapshot_date=args.snapshot_date,
+        )
+    except Exception as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    brief = {
+        "source_run_id": summary["source_run_id"],
+        "ok_count": summary["ok_count"],
+        "error_count": summary["error_count"],
+        "from_json_dir": summary["from_json_dir"],
+        "gap_summary": summary["gap_summary"],
+        "sample": [
+            {
+                "symbol": r.get("symbol"),
+                "inserted": r.get("inserted"),
+                "rows_after": r.get("rows_after"),
+                "ok": r.get("ok"),
+                "path": r.get("path"),
+            }
+            for r in summary["results"][:5]
+        ],
+    }
+    print(json.dumps(brief, ensure_ascii=False, indent=2))
+    return 0 if summary["error_count"] == 0 else 1
+
+
 def cmd_archive_bars(args: argparse.Namespace) -> int:
     from .bars import run_archive_bars
 
@@ -93,7 +158,7 @@ def cmd_archive_bars(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="flipscope_signal",
-        description="M-1a internal data accumulation (universe + bars + connectivity)",
+        description="M-1a internal data accumulation (universe, Binance/MT5 bars, connectivity)",
     )
     p.add_argument("-v", "--verbose", action="store_true")
     sub = p.add_subparsers(dest="command", required=True)
@@ -118,6 +183,37 @@ def build_parser() -> argparse.ArgumentParser:
     p_bars.add_argument("--lookback", type=int, default=500, help="Bars to pull when empty")
     p_bars.add_argument("--snapshot-date", help="Use this universe snapshot date")
     p_bars.set_defaults(func=cmd_archive_bars)
+
+    p_mt5 = sub.add_parser(
+        "snapshot_mt5",
+        help="Write daily MT5 tradeable list (dynamic, else static fallback)",
+    )
+    p_mt5.add_argument("--date", help="UTC snapshot date YYYY-MM-DD (default: today UTC)")
+    p_mt5.add_argument(
+        "--static-only",
+        action="store_true",
+        help="Skip the terminal and copy the static mt5_all_tradeable file",
+    )
+    p_mt5.set_defaults(func=cmd_snapshot_mt5)
+
+    p_mt5_bars = sub.add_parser(
+        "archive_mt5_bars",
+        help="Archive closed MT5 5m bars to parquet (read-only)",
+    )
+    p_mt5_bars.add_argument("--limit", type=int, default=None, help="Only first N symbols")
+    p_mt5_bars.add_argument("--symbol", help="Comma-separated symbols (case preserved)")
+    p_mt5_bars.add_argument(
+        "--from-json-dir",
+        help="Directory of exported {ok, history:[...]} JSON (one file per symbol)",
+    )
+    p_mt5_bars.add_argument(
+        "--lookback",
+        type=int,
+        default=500,
+        help="M5 bars to read from a live terminal when JSON is not used",
+    )
+    p_mt5_bars.add_argument("--snapshot-date", help="MT5 snapshot date when not using JSON dir")
+    p_mt5_bars.set_defaults(func=cmd_archive_mt5_bars)
 
     return p
 

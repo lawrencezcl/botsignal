@@ -9,6 +9,7 @@ import pytest
 
 from flipscope_signal import paths as paths_mod
 from flipscope_signal.universe import (
+    copy_mt5_tradeable,
     degrade_from_prev,
     find_latest_snapshot,
     write_snapshot,
@@ -82,6 +83,16 @@ def test_refuse_empty_write(isolated_data: Path):
 def test_degrade_without_prior_raises(isolated_data: Path):
     with pytest.raises(RuntimeError, match="no prior snapshot"):
         degrade_from_prev(date(2026, 11, 6), reason="boom", include_mt5=False)
+
+
+def test_copy_keeps_existing_mt5_snapshot(isolated_data: Path):
+    dest = paths_mod.MT5_SNAPSHOT_DIR / "2026-11-06.txt"
+    dest.write_text("# source: metatrader5\nEURUSDz\n", encoding="utf-8")
+    meta = copy_mt5_tradeable(date(2026, 11, 6))
+    assert meta is not None
+    assert meta["source"] == "existing"
+    assert meta["symbols"] == ["EURUSDz"]
+    assert dest.read_text(encoding="utf-8").count("EURUSDz") == 1
 
 
 def test_find_latest(isolated_data: Path):

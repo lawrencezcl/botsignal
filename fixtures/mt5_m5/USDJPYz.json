@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "symbol": "USDJPYz",
+  "history": [
+    {"time": "2026-11-05T01:00:00", "open": 157.10, "high": 157.20, "low": 157.05, "close": 157.15, "tick_volume": 40},
+    {"time": "2026-11-05T01:05:00", "open": 157.15, "high": 157.30, "low": 157.12, "close": 157.22, "tick_volume": 55}
+  ]
+}

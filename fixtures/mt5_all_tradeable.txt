@@ -1,0 +1,22 @@
+# Static fallback list (class: mt5_all_tradeable).
+# snapshot_mt5 prefers a live read-only terminal list and uses this file only
+# when that fails. Names below are a small full-mode sample (broker suffix z),
+# not a complete broker catalog. Disabled and close-only names are omitted.
+# Override with FLIPSCOPE_MT5_TRADEABLE=/path/to/mt5_all_tradeable.txt
+EURUSDz
+GBPUSDz
+USDJPYz
+USDCHFz
+XAUUSDz
+XAGUSDz
+USOILz
+US500z
+US30z
+USTECz
+DE30z
+HK50z
+JP225z
+DXYz
+BTCUSDz
+ETHUSDz
+ETHBTCz

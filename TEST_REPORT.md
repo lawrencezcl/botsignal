@@ -48,3 +48,28 @@ data/runs/archive_bars_*.json
 - [x] 真实快照 + 若干 parquet
 - [x] degraded 单测 + `--force-fail` 实跑
 - [x] 无 secrets 入仓；无公开站/部署/下单
+
+## MT5 数据侧（t137u，2026-11-06）
+
+本环境无 MetaTrader5 Python 包，也没有 python3-venv，依赖用 `python3 -m pip install --user -r requirements.txt`（Python 3.12）。Linux 侧不连终端；K 线来自 `fixtures/mt5_m5/`。动态名单失败后走仓库内 `fixtures/mt5_all_tradeable.txt`。
+
+| 步骤 | 命令 | 结果 |
+|---|---|---|
+| 单元测试 | `PYTHONPATH=src python3 -m pytest -q` | **19 passed**（含原 6 项；新增 MT5 merge 幂等、forming K 丢弃、静态兜底、JSON limit、已有名单不被 universe 覆盖） |
+| 名单 | `python -m flipscope_signal snapshot_mt5 --date 2026-11-06` | stderr `MT5_STATIC_FALLBACK`（原因：`MetaTrader5 package not installed`）；写出 17 个品种；`degraded_from_static=true` |
+| Bars | `archive_mt5_bars --limit 5 --from-json-dir fixtures/mt5_m5` | **5** 个 parquet，`ok=5 err=0`。EURUSDz 3 根（未来 K 已丢），GBPUSDz 4 根且缺口 1（估计缺 2 根） |
+| 幂等 | 同上再跑一次 | 五品种 `inserted=0`，行数不变 |
+
+```
+data/mt5_snapshots/2026-11-06.txt
+data/bars/mt5/BTCUSDz/5m.parquet
+data/bars/mt5/EURUSDz/5m.parquet
+data/bars/mt5/GBPUSDz/5m.parquet
+data/bars/mt5/US500z/5m.parquet
+data/bars/mt5/USDJPYz/5m.parquet
+data/runs/archive_mt5_bars_*.json
+```
+
+列：`open_time, open, high, low, close, volume(=tick_volume), close_time, source_run_id, gap_filled, is_sparse`。GBPUSDz 有 1 行 `is_sparse=true`（`tick_volume=0`）。
+
+未调用任何下单 / `trade_*` API。终端全量动态名单与实盘 `copy_rates` 需在已打开 MT5 的 Windows 机器上再跑；本机验收覆盖的是静态兜底和 `--from-json-dir`。
