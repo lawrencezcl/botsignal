@@ -28,6 +28,12 @@ python -m flipscope_signal archive_mt5_bars --limit 5 --from-json-dir fixtures/m
 
 数据写入 `data/`（已 gitignore）。自测报告见 `TEST_REPORT.md`。MT5 细节见 `docs/M-1a.md`。
 
+## Reports
+
+- [MT5 Market Watch 全品种深度分析](reports/mt5-full311-20261106/index.html)
+  - Snapshot Asia/Shanghai 2026-11-06 ~21:20
+  - Exness-MT5Real5 · 311 symbols · 276 fresh · read-only · no orders
+
 ## Pi + GLM（可选）
 
 ```bash
